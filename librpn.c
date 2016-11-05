@@ -1,5 +1,7 @@
-#include "unit.h"
+#include <string.h>
+#include "librpn.h"
 
-int answer() {
-    return 6 * 9;
+char* infix_to_rpn(const char *infix)
+{
+    return strdup(infix);
 }

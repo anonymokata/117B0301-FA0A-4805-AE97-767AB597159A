@@ -1,4 +1,4 @@
-#include "../unit.h"
+#include "../librpn.h"
 
 #include <check.h>
 
@@ -14,7 +14,7 @@ TCase *tcase_life(void)
 	TCase *tc;
 
 	tc = tcase_create("without-parens");
-	tcase_add_test(tc, the_answer_to_life_the_universe_and_everything);
+	tcase_add_test(tc, aplusb_yieldsabplus);
 
 	return tc;
 }
