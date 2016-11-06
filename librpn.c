@@ -16,7 +16,7 @@ char *infix_to_rpn(char *infix) {
 
   buffer[0] = infix[0];
   buffer[1] = infix[2];
-  buffer[2] = '+';
+  buffer[2] = infix[1];
 
   // Unchecked copy is safe because the RPN representation will always be the
   // same size or smaller than the infix notation.
