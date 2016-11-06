@@ -37,11 +37,15 @@ int main(int argc, char **argv)
 	SRunner *runner;
 	int number_fails;
 
+	rpn_init();
+
 	s = suite_rpn();
 	runner = srunner_create(s);
 	srunner_run_all(runner, CK_NORMAL);
 	number_fails = srunner_ntests_failed(runner);
 	srunner_free(runner);
+
+	rpn_release();
 
 	return number_fails;
 }
