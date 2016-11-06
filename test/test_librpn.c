@@ -9,7 +9,7 @@ START_TEST(aplusb_yieldsabplus)
 }
 END_TEST
 
-TCase *tcase_life(void)
+TCase *tcase_without_parens(void)
 {
 	TCase *tc;
 
@@ -19,13 +19,14 @@ TCase *tcase_life(void)
 	return tc;
 }
 
-Suite *suite_life(void)
+Suite *suite_rpn(void)
 {
 	Suite *s;
 
 	s = suite_create("infix-to-rpn");
 
-	suite_add_tcase(s, tcase_life());
+	suite_add_tcase(s, tcase_without_parens
+());
 
 	return s;
 }
@@ -36,7 +37,7 @@ int main(int argc, char **argv)
 	SRunner *runner;
 	int number_fails;
 
-	s = suite_life();
+	s = suite_rpn();
 	runner = srunner_create(s);
 	srunner_run_all(runner, CK_NORMAL);
 	number_fails = srunner_ntests_failed(runner);

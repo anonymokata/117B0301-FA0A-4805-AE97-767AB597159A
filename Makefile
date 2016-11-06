@@ -10,5 +10,5 @@ clean:
 test:
 	$(MAKE) -C test full
 
-life: librpn.o main.o
+infixtorpn: librpn.o main.o
 	$(CC) -o $@ $^
