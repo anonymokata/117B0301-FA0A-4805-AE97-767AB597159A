@@ -10,16 +10,96 @@
  */
 #define RPN_BUFFER_SIZE 52
 
-char *infix_to_rpn(char *infix) {
-  char buffer[RPN_BUFFER_SIZE];
-  memset(buffer, 0, RPN_BUFFER_SIZE);
+char buffer[RPN_BUFFER_SIZE];
+int buffer_idx;
 
-  buffer[0] = infix[0];
-  buffer[1] = infix[2];
-  buffer[2] = infix[1];
+void buffer_init()
+{
+    memset(buffer, 0, sizeof(buffer));
+    buffer_idx = 0;
+}
 
-  // Unchecked copy is safe because the RPN representation will always be the
-  // same size or smaller than the infix notation.
-  strcpy(infix, buffer);
-  return infix;
+void buffer_append(char x)
+{
+    if (buffer_idx < sizeof(buffer))
+    {
+        buffer[buffer_idx++] = x;
+    }
+}
+
+#define NOT_AN_OPERATOR -1
+int operator_precedence(char operator)
+{
+    switch (operator)
+    {
+    case '*':
+    case '/':
+    case '+':
+    case '-':
+    case '^':
+        return 5;
+    default:
+        return NOT_AN_OPERATOR;
+    }
+}
+
+char stack[25];
+int stack_idx = 0;
+
+void stack_init()
+{
+    memset(stack, 0, sizeof(stack));
+    stack_idx = 0;
+}
+
+void stack_push(char x)
+{
+    if (stack_idx < sizeof(stack))
+    {
+        stack[++stack_idx] = x;
+    }
+}
+
+char stack_pop()
+{
+    if (stack_idx > 0)
+    {
+        char tmp = stack[stack_idx];
+        stack[stack_idx--] = 0;
+        return tmp;
+    }
+    return 0;
+}
+
+char *infix_to_rpn(char *infix)
+{
+    char symbol;
+    int precedence;
+
+    buffer_init();
+    stack_init();
+
+    for (int i = 0; infix[i]; ++i)
+    {
+        symbol = infix[i];
+        precedence = operator_precedence(symbol);
+        if (NOT_AN_OPERATOR == precedence)
+        {
+            buffer_append(symbol);
+        }
+        else
+        {
+            stack_push(symbol);
+        }
+    }
+
+    while ((symbol = stack_pop()))
+    {
+        buffer_append(symbol);
+    }
+
+    // Unchecked copy is safe because the RPN representation will always be the
+    // same size or smaller than the infix notation.
+    strcpy(infix, buffer);
+    return infix;
 }

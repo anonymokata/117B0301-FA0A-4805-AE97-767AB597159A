@@ -9,7 +9,8 @@ struct test_value {
   const char *expected;
 };
 
-struct test_value cases[] = {{"a+b", "ab+"}, {"i+j", "ij+"}, {"c-d", "cd-"}};
+struct test_value cases[] = {
+    {"a+b", "ab+"}, {"i+j", "ij+"}, {"c-d", "cd-"}, {"a+b-c", "abc-+"}};
 
 START_TEST(simple_values) {
   static char source[BUFFER_LENGTH];
