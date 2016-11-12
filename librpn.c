@@ -14,66 +14,56 @@
 char buffer[RPN_BUFFER_SIZE];
 int buffer_idx;
 
-void buffer_init()
-{
-    memset(buffer, 0, sizeof(buffer));
-    buffer_idx = 0;
+void buffer_init() {
+  memset(buffer, 0, sizeof(buffer));
+  buffer_idx = 0;
 }
 
-void buffer_append(char x)
-{
-    if (buffer_idx < sizeof(buffer))
-    {
-        buffer[buffer_idx++] = x;
-    }
+void buffer_append(char x) {
+  if (buffer_idx < sizeof(buffer)) {
+    buffer[buffer_idx++] = x;
+  }
 }
 
 #define NOT_AN_OPERATOR -1
-int operator_precedence(char op)
-{
-    switch (op)
-    {
-    case '*':
-    case '/':
-    case '+':
-    case '-':
-    case '^':
-        return 5;
-    default:
-        return NOT_AN_OPERATOR;
-    }
+int operator_precedence(char op) {
+  switch (op) {
+  case '*':
+  case '/':
+  case '^':
+    return 1;
+  case '-':
+    return 4;
+  case '+':
+    return 5;
+  default:
+    return NOT_AN_OPERATOR;
+  }
 }
 
+char *infix_to_rpn(char *infix) {
+  char symbol;
+  int precedence;
 
-char *infix_to_rpn(char *infix)
-{
-    char symbol;
-    int precedence;
+  buffer_init();
+  stack_init();
 
-    buffer_init();
-    stack_init();
-
-    for (int i = 0; infix[i]; ++i)
-    {
-        symbol = infix[i];
-        precedence = operator_precedence(symbol);
-        if (NOT_AN_OPERATOR == precedence)
-        {
-            buffer_append(symbol);
-        }
-        else
-        {
-            stack_push(symbol);
-        }
+  for (int i = 0; infix[i]; ++i) {
+    symbol = infix[i];
+    precedence = operator_precedence(symbol);
+    if (NOT_AN_OPERATOR == precedence) {
+      buffer_append(symbol);
+    } else {
+      stack_push(symbol);
     }
+  }
 
-    while ((symbol = stack_pop()))
-    {
-        buffer_append(symbol);
-    }
+  while ((symbol = stack_pop())) {
+    buffer_append(symbol);
+  }
 
-    // Unchecked copy is safe because the RPN representation will always be the
-    // same size or smaller than the infix notation.
-    strcpy(infix, buffer);
-    return infix;
+  // Unchecked copy is safe because the RPN representation will always be the
+  // same size or smaller than the infix notation.
+  strcpy(infix, buffer);
+  return infix;
 }
