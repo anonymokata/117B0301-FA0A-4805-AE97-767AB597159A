@@ -45,6 +45,15 @@ START_TEST(stackPeek_withTwoCharactersPushed_returnsMostRecentCharacterPushed) {
 }
 END_TEST
 
+START_TEST(
+    stackPeekCalledTwice_withTwoCharactersPushed_returnsMostRecentCharacterPushed) {
+  stack_push('A');
+  stack_push('B');
+  ck_assert_int_eq(stack_peek(), 'B');
+  ck_assert_int_eq(stack_peek(), 'B');
+}
+END_TEST
+
 TCase *tcase_stack(void) {
   TCase *tc;
 
@@ -59,6 +68,9 @@ TCase *tcase_stack(void) {
       fiftyOnePushedCharacters_whenPoppedFiftyOneTimes_willReturnZeroOnTheFiftyFirstPop);
   tcase_add_test(
       tc, stackPeek_withTwoCharactersPushed_returnsMostRecentCharacterPushed);
+  tcase_add_test(
+      tc,
+      stackPeekCalledTwice_withTwoCharactersPushed_returnsMostRecentCharacterPushed);
 
   return tc;
 }

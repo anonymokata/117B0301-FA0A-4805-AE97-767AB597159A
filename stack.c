@@ -24,4 +24,4 @@ char stack_pop(void) {
   return _stack[--_idx];
 }
 
-char stack_peek(void) { return stack_pop(); }
+char stack_peek(void) { return _stack[_idx - 1]; }
