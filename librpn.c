@@ -58,7 +58,7 @@ char *infix_to_rpn(char *infix) {
     }
   }
 
-  while ((symbol = stack_pop())) {
+  while ((symbol = stack_pop()) != STACK_UNDERFLOW) {
     buffer_append(symbol);
   }
 

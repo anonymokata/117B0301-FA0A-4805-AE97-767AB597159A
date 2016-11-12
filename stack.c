@@ -19,9 +19,14 @@ void stack_push(char c) {
 
 char stack_pop(void) {
   if (0 == _idx) {
-    return 0;
+    return STACK_UNDERFLOW;
   }
   return _stack[--_idx];
 }
 
-char stack_peek(void) { return _stack[_idx - 1]; }
+char stack_peek(void) {
+  if (_idx > 0) {
+    return _stack[_idx - 1];
+  }
+  return STACK_UNDERFLOW;
+}

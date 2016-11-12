@@ -4,6 +4,8 @@
 #ifndef _STACK_H_
 #define _STACK_H_
 
+#define STACK_UNDERFLOW -1
+
 /* Call this before using your stack, or to reset the condition of the stack */
 void stack_init(void);
 
