@@ -1,5 +1,7 @@
 .PHONY: all test clean
 
+CFLAGS = -g
+
 all: test infixtorpn
 
 clean:

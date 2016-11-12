@@ -25,21 +25,39 @@ void buffer_append(char x) {
   }
 }
 
+enum operator_p {
+  OP_LEFTPAREN,
+  OP_RIGHTPAREN,
+  OP_EXPONENT,
+  OP_DIVISION,
+  OP_MULTIPLICATION,
+  OP_SUBTRACTION,
+  OP_ADDITION,
+
+  // Should always be the last option, so invalid operators will never be popped
+  // from the stack and put into the buffer for precedence.
+  OP_INVALID
+};
+
 #define NOT_AN_OPERATOR -1
-int operator_precedence(char op) {
+enum operator_p operator_precedence(char op) {
   switch (op) {
   case '^':
-    return 1;
+    return OP_EXPONENT;
   case '/':
-    return 2;
+    return OP_DIVISION;
   case '*':
-    return 3;
+    return OP_MULTIPLICATION;
   case '-':
-    return 4;
+    return OP_SUBTRACTION;
   case '+':
-    return 5;
+    return OP_ADDITION;
+  // There is special logic to handle parens, so for purposes of operator
+  // precedence we should treat them like other symbols.
+  case '(':
+  case ')':
   default:
-    return NOT_AN_OPERATOR;
+    return OP_INVALID;
   }
 }
 
@@ -53,16 +71,33 @@ char *infix_to_rpn(char *infix) {
 
   for (int i = 0; infix[i]; ++i) {
     symbol = infix[i];
-    precedence = operator_precedence(symbol);
-    if (NOT_AN_OPERATOR == precedence) {
-      buffer_append(symbol);
-    } else {
+    switch (symbol) {
+    case '(':
+      stack_push(symbol);
+      break;
+    case ')':
+      for (last_operator = stack_pop();
+           last_operator != '(' && last_operator != STACK_UNDERFLOW;
+           last_operator = stack_pop()) {
+        buffer_append(last_operator);
+      }
+      break;
+    case '^':
+    case '/':
+    case '*':
+    case '-':
+    case '+':
+      precedence = operator_precedence(symbol);
       last_operator = stack_peek();
       if (STACK_UNDERFLOW != last_operator &&
           operator_precedence(last_operator) <= precedence) {
         buffer_append(stack_pop());
       }
       stack_push(symbol);
+      break;
+    default:
+      buffer_append(symbol);
+      break;
     }
   }
 
