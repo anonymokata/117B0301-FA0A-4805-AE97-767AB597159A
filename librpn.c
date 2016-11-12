@@ -43,6 +43,7 @@ int operator_precedence(char op) {
 
 char *infix_to_rpn(char *infix) {
   char symbol;
+  char last_operator;
   int precedence;
 
   buffer_init();
@@ -54,6 +55,11 @@ char *infix_to_rpn(char *infix) {
     if (NOT_AN_OPERATOR == precedence) {
       buffer_append(symbol);
     } else {
+      last_operator = stack_peek();
+      if (STACK_UNDERFLOW != last_operator &&
+          operator_precedence(last_operator) < precedence) {
+        buffer_append(stack_pop());
+      }
       stack_push(symbol);
     }
   }
