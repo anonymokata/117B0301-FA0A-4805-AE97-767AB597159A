@@ -10,10 +10,11 @@ struct test_value {
   const char *expected;
 };
 
-struct test_value cases[] = {
-    {"a+b", "ab+"},     {"i+j", "ij+"},     {"c-d", "cd-"},
-    {"a+b-c", "abc-+"}, {"a-b+c", "ab-c+"}, {"a^b^c", "ab^c^"},
-    {"a*b/c", "abc/*"}, {"a/b*c", "ab/c*"}, {"(a+b)*c", "ab+c*"}};
+struct test_value cases[] = {{"a+b", "ab+"},       {"i+j", "ij+"},
+                             {"c-d", "cd-"},       {"a+b-c", "abc-+"},
+                             {"a-b+c", "ab-c+"},   {"a^b^c", "ab^c^"},
+                             {"a*b/c", "abc/*"},   {"a/b*c", "ab/c*"},
+                             {"(a+b)*c", "ab+c*"}, {"(a+b)^(c*d)", "ab+cd*^"}};
 
 START_TEST(simple_values) {
   static char source[BUFFER_LENGTH];
@@ -28,7 +29,7 @@ TCase *tcase_without_parens(void) {
   TCase *tc;
   int num_cases = sizeof(cases) / sizeof(struct test_value);
 
-  tc = tcase_create("without-parens");
+  tc = tcase_create("infix-to-rpn");
   tcase_add_loop_test(tc, simple_values, 0, num_cases);
 
   return tc;
