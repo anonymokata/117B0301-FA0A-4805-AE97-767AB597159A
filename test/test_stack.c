@@ -24,6 +24,20 @@ START_TEST(onePushedCharacter_withTwoPops_willReturnZero) {
 }
 END_TEST
 
+START_TEST(
+    fiftyOnePushedCharacters_whenPoppedFiftyOneTimes_willReturnZeroOnTheFiftyFirstPop) {
+  int i;
+  stack_push('X');
+  for (i = 0; i < 50; ++i) {
+    stack_push('A');
+  }
+  for (i = 0; i < 50; ++i) {
+    stack_pop();
+  }
+  ck_assert_int_eq(stack_pop(), 0);
+}
+END_TEST
+
 TCase *tcase_stack(void) {
   TCase *tc;
 
@@ -33,6 +47,9 @@ TCase *tcase_stack(void) {
   tcase_add_test(
       tc, twoPushedCharacters_whenPopped_willReturnCharactersInReverseOrder);
   tcase_add_test(tc, onePushedCharacter_withTwoPops_willReturnZero);
+  tcase_add_test(
+      tc,
+      fiftyOnePushedCharacters_whenPoppedFiftyOneTimes_willReturnZeroOnTheFiftyFirstPop);
 
   return tc;
 }

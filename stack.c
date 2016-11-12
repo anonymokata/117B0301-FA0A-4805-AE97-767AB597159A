@@ -11,7 +11,11 @@ void stack_init(void) {
   _idx = 0;
 }
 
-void stack_push(char c) { _stack[_idx++] = c; }
+void stack_push(char c) {
+  if (_idx < sizeof(_stack)) {
+    _stack[_idx++] = c;
+  }
+}
 
 char stack_pop(void) {
   if (0 == _idx) {
