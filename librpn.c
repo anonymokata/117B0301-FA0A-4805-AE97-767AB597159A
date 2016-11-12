@@ -57,7 +57,7 @@ char *infix_to_rpn(char *infix) {
     } else {
       last_operator = stack_peek();
       if (STACK_UNDERFLOW != last_operator &&
-          operator_precedence(last_operator) < precedence) {
+          operator_precedence(last_operator) <= precedence) {
         buffer_append(stack_pop());
       }
       stack_push(symbol);
