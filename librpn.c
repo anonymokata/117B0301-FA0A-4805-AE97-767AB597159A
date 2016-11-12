@@ -28,10 +28,12 @@ void buffer_append(char x) {
 #define NOT_AN_OPERATOR -1
 int operator_precedence(char op) {
   switch (op) {
-  case '*':
-  case '/':
   case '^':
     return 1;
+  case '/':
+    return 2;
+  case '*':
+    return 3;
   case '-':
     return 4;
   case '+':
