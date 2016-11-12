@@ -1,15 +1,16 @@
-CFLAGS = `pkg-config --cflags check`
+CFLAGS = `pkg-config --cflags check` -g
 LIBS = `pkg-config --libs check`
 VPATH=..
 
-TEST_OBJECTS = test_librpn.o
+TEST_OBJECTS = test_librpn.o test_stack.o
+APPLICATION_OBJECTS = librpn.o stack.o
 
 all: test_librpn
 	./test_librpn
 
 full: all memtest
 
-test_librpn: librpn.o $(TEST_OBJECTS)
+test_librpn: ${APPLICATION_OBJECTS} $(TEST_OBJECTS)
 	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
 
 memtest: test_librpn

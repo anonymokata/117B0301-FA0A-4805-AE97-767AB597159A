@@ -1,4 +1,5 @@
 #include "librpn.h"
+#include "stack.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -28,9 +29,9 @@ void buffer_append(char x)
 }
 
 #define NOT_AN_OPERATOR -1
-int operator_precedence(char operator)
+int operator_precedence(char op)
 {
-    switch (operator)
+    switch (op)
     {
     case '*':
     case '/':
@@ -43,33 +44,6 @@ int operator_precedence(char operator)
     }
 }
 
-char stack[25];
-int stack_idx = 0;
-
-void stack_init()
-{
-    memset(stack, 0, sizeof(stack));
-    stack_idx = 0;
-}
-
-void stack_push(char x)
-{
-    if (stack_idx < sizeof(stack))
-    {
-        stack[++stack_idx] = x;
-    }
-}
-
-char stack_pop()
-{
-    if (stack_idx > 0)
-    {
-        char tmp = stack[stack_idx];
-        stack[stack_idx--] = 0;
-        return tmp;
-    }
-    return 0;
-}
 
 char *infix_to_rpn(char *infix)
 {

@@ -4,5 +4,6 @@
 #include <check.h>
 
 TCase *tcase_stack(void);
+Suite *suite_stack(void);
 
 #endif
