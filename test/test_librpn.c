@@ -22,7 +22,9 @@ struct test_value cases[] = {{"a+b", "ab+"},
                              {"(a+b)^(c*d)", "ab+cd*^"},
                              {"((a+b)*c)/d", "ab+c*d/"},
                              {"(c*(a+b))/(d+e)", "cab+*de+/"},
-                             {"l/m^n*o-p", "lmn^/o*p-"}};
+                             {"l/m^n*o-p", "lmn^/o*p-"},
+                             {"((l/(m^n))*o)-p", "lmn^/o*p-"},
+                             {"((v/w)^x)*(y-z)", "vw/x^yz-*"}};
 
 START_TEST(simple_values) {
   static char source[BUFFER_LENGTH];
