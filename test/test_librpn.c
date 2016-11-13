@@ -10,11 +10,19 @@ struct test_value {
   const char *expected;
 };
 
-struct test_value cases[] = {{"a+b", "ab+"},       {"i+j", "ij+"},
-                             {"c-d", "cd-"},       {"a+b-c", "abc-+"},
-                             {"a-b+c", "ab-c+"},   {"a^b^c", "ab^c^"},
-                             {"a*b/c", "abc/*"},   {"a/b*c", "ab/c*"},
-                             {"(a+b)*c", "ab+c*"}, {"(a+b)^(c*d)", "ab+cd*^"}};
+struct test_value cases[] = {{"a+b", "ab+"},
+                             {"i+j", "ij+"},
+                             {"c-d", "cd-"},
+                             {"a+b-c", "abc-+"},
+                             {"a-b+c", "ab-c+"},
+                             {"a^b^c", "ab^c^"},
+                             {"a*b/c", "abc/*"},
+                             {"a/b*c", "ab/c*"},
+                             {"(a+b)*c", "ab+c*"},
+                             {"(a+b)^(c*d)", "ab+cd*^"},
+                             {"((a+b)*c)/d", "ab+c*d/"},
+                             {"(c*(a+b))/(d+e)", "cab+*de+/"},
+                             {"l/m^n*o-p", "lmn^/o*p-"}};
 
 START_TEST(simple_values) {
   static char source[BUFFER_LENGTH];

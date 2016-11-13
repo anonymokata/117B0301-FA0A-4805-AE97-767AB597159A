@@ -26,8 +26,6 @@ void buffer_append(char x) {
 }
 
 enum operator_p {
-  OP_LEFTPAREN,
-  OP_RIGHTPAREN,
   OP_EXPONENT,
   OP_DIVISION,
   OP_MULTIPLICATION,
@@ -61,6 +59,29 @@ enum operator_p operator_precedence(char op) {
   }
 }
 
+void handle_operator(char symbol) {
+  char last_operator;
+  enum operator_p precedence;
+
+  precedence = operator_precedence(symbol);
+  for (last_operator = stack_peek();
+       STACK_UNDERFLOW != last_operator &&
+       operator_precedence(last_operator) <= precedence;
+       last_operator = stack_peek()) {
+    buffer_append(stack_pop());
+  }
+  stack_push(symbol);
+}
+
+void handle_right_paren(char symbol /* unused */) {
+  char last_operator;
+  for (last_operator = stack_pop();
+       last_operator != '(' && last_operator != STACK_UNDERFLOW;
+       last_operator = stack_pop()) {
+    buffer_append(last_operator);
+  }
+}
+
 char *infix_to_rpn(char *infix) {
   char symbol;
   char last_operator;
@@ -76,24 +97,14 @@ char *infix_to_rpn(char *infix) {
       stack_push(symbol);
       break;
     case ')':
-      for (last_operator = stack_pop();
-           last_operator != '(' && last_operator != STACK_UNDERFLOW;
-           last_operator = stack_pop()) {
-        buffer_append(last_operator);
-      }
+      handle_right_paren(symbol);
       break;
     case '^':
     case '/':
     case '*':
     case '-':
     case '+':
-      precedence = operator_precedence(symbol);
-      last_operator = stack_peek();
-      if (STACK_UNDERFLOW != last_operator &&
-          operator_precedence(last_operator) <= precedence) {
-        buffer_append(stack_pop());
-      }
-      stack_push(symbol);
+      handle_operator(symbol);
       break;
     default:
       buffer_append(symbol);
