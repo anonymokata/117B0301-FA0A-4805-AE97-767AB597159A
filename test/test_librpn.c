@@ -1,8 +1,9 @@
+#include <check.h>
+#include <stdlib.h>
 
 #include "../librpn.h"
 #include "test_sstack.h"
 #include "test_stack.h"
-#include <check.h>
 
 #define BUFFER_LENGTH 256
 
@@ -37,7 +38,13 @@ START_TEST(convert_infix_to_rpn) {
 END_TEST
 
 START_TEST(convert_rpn_to_infix) {
-  ck_assert_str_eq(rpn_to_infix(cases[_i].rpn), cases[_i].infix);
+  char *actual;
+  const char *expected;
+
+  actual = rpn_to_infix(cases[_i].rpn);
+  expected = cases[_i].infix;
+  ck_assert_str_eq(actual, expected);
+  free(actual);
 }
 END_TEST
 

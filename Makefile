@@ -1,6 +1,6 @@
 .PHONY: all test clean
 
-CFLAGS = -g
+CFLAGS = -g -std=c99
 
 all: test infixtorpn
 

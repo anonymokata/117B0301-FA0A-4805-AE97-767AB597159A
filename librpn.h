@@ -3,6 +3,6 @@
 
 char *infix_to_rpn(char *infix);
 
-const char *rpn_to_infix(const char *rpn);
+char *rpn_to_infix(const char *rpn);
 
 #endif

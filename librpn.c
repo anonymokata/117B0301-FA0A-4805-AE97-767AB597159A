@@ -1,7 +1,12 @@
-#include "librpn.h"
-#include "stack.h"
+#define _GNU_SOURCE
+
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "librpn.h"
+#include "stack.h"
+#include "stringstack.h"
 
 /* Assume there are 26 available symbols [a-z].
  * Each symbol save the first may be followed by an operator [^,-,+,/,*]
@@ -122,4 +127,63 @@ char *infix_to_rpn(char *infix) {
   return infix;
 }
 
-const char *rpn_to_infix(const char *rpn) { return "NULL"; }
+char *wrap_term(const char *arg) {
+  char *output;
+  if (strlen(arg) > 2) {
+    asprintf(&output, "(%s)", arg);
+  } else {
+    output = strdup(arg);
+  }
+  return output;
+}
+
+void join_terms(char x) {
+  const char *cright;
+  const char *cleft;
+  char *right;
+  char *left;
+  char *expression;
+
+  cright = ss_pop();
+  cleft = ss_pop();
+  right = wrap_term(cright);
+  left = wrap_term(cleft);
+  asprintf(&expression, "%s%c%s", left, x, right);
+  ss_push(expression);
+
+  free(left);
+  free(right);
+  free(expression);
+}
+
+char *rpn_to_infix(const char *rpn) {
+  enum operator_p precedence;
+  char x;
+  char x_as_string[2] = {0, 0};
+  const char *result;
+
+  ss_init();
+
+  for (int i = 0; rpn[i]; ++i) {
+    x = rpn[i];
+    x_as_string[0] = x;
+    precedence = operator_precedence(x);
+    switch (precedence) {
+    case OP_INVALID:
+      ss_push(x_as_string);
+      break;
+    case OP_ADDITION:
+    case OP_SUBTRACTION:
+    case OP_MULTIPLICATION:
+    case OP_DIVISION:
+    case OP_EXPONENT:
+      join_terms(x);
+      break;
+    }
+  }
+
+  result = strdup(ss_pop());
+  ss_release();
+
+  return result;
+}

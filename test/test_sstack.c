@@ -69,6 +69,19 @@ START_TEST(stackPeek_withEmptyStack_returnsStackUnderflow) {
 }
 END_TEST
 
+START_TEST(
+    stackPopCalledTwiceWithSamePointerButDifferentContents_poppedTwice_returnsTwoDifferentStrings) {
+  char name[6];
+  strcpy(name, ALICE);
+  ss_push(name);
+  strcpy(name, BOB);
+  ss_push(name);
+
+  ck_assert_str_eq(ss_pop(), BOB);
+  ck_assert_str_eq(ss_pop(), ALICE);
+}
+END_TEST
+
 TCase *tcase_stringstack(void) {
   TCase *tc;
 
@@ -87,6 +100,9 @@ TCase *tcase_stringstack(void) {
       tc,
       stackPeekCalledTwice_withTwoStringsPushed_returnsMostRecentStringPushed);
   tcase_add_test(tc, stackPeek_withEmptyStack_returnsStackUnderflow);
+  tcase_add_test(
+      tc,
+      stackPopCalledTwiceWithSamePointerButDifferentContents_poppedTwice_returnsTwoDifferentStrings);
 
   return tc;
 }

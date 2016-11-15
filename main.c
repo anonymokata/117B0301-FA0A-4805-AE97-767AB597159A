@@ -6,12 +6,11 @@
 #include "stack.h"
 
 int main(int argc, const char **argv) {
-  char *work = NULL;
+  const char *work = NULL;
   stack_init();
 
   if (argc > 1) {
-    work = strdup(argv[1]);
-    infix_to_rpn(work);
+    work = rpn_to_infix(argv[1]);
     printf("%s => %s\n", argv[1], work);
   }
 
