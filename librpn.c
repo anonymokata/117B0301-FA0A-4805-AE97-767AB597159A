@@ -127,9 +127,23 @@ char *infix_to_rpn(char *infix) {
   return infix;
 }
 
-char *wrap_term(const char *arg) {
+int expression_needs_wrap(const char *expression, char op) {
+  enum operator_p op_precedence;
+  enum operator_p ex_precedence;
+
+  if (strlen(expression) == 3) {
+    ex_precedence = operator_precedence(expression[1]);
+    op_precedence = operator_precedence(op);
+    if (ex_precedence > op_precedence) {
+      return 1;
+    }
+  }
+  return 0;
+}
+
+char *wrap_term(const char *arg, char op) {
   char *output;
-  if (strlen(arg) > 2) {
+  if (strlen(arg) > 3 && expression_needs_wrap(arg, op)) {
     asprintf(&output, "(%s)", arg);
   } else {
     output = strdup(arg);
@@ -146,8 +160,9 @@ void join_terms(char x) {
 
   cright = ss_pop();
   cleft = ss_pop();
-  right = wrap_term(cright);
-  left = wrap_term(cleft);
+
+  right = wrap_term(cright, x);
+  left = wrap_term(cleft, x);
   asprintf(&expression, "%s%c%s", left, x, right);
   ss_push(expression);
 
@@ -160,7 +175,7 @@ char *rpn_to_infix(const char *rpn) {
   enum operator_p precedence;
   char x;
   char x_as_string[2] = {0, 0};
-  const char *result;
+  char *result;
 
   ss_init();
 
