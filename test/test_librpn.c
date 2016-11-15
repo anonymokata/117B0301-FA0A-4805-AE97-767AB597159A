@@ -27,7 +27,7 @@ struct test_value cases[] = {{"a+b", "ab+"},
                              {"((l/(m^n))*o)-p", "lmn^/o*p-"},
                              {"((v/w)^x)*(y-z)", "vw/x^yz-*"}};
 
-START_TEST(simple_values) {
+START_TEST(convert_infix_to_rpn) {
   static char infix[BUFFER_LENGTH];
   memset(infix, 0, BUFFER_LENGTH);
   strncpy(infix, cases[_i].infix, BUFFER_LENGTH - 1);
@@ -36,12 +36,18 @@ START_TEST(simple_values) {
 }
 END_TEST
 
-TCase *tcase_without_parens(void) {
+START_TEST(convert_rpn_to_infix) {
+  ck_assert_str_eq(rpn_to_infix(cases[_i].rpn), cases[_i].infix);
+}
+END_TEST
+
+TCase *tcase_conversions(void) {
   TCase *tc;
   int num_cases = sizeof(cases) / sizeof(struct test_value);
 
-  tc = tcase_create("infix-to-rpn");
-  tcase_add_loop_test(tc, simple_values, 0, num_cases);
+  tc = tcase_create("conversions");
+  tcase_add_loop_test(tc, convert_infix_to_rpn, 0, num_cases);
+  tcase_add_loop_test(tc, convert_rpn_to_infix, 0, num_cases);
 
   return tc;
 }
@@ -51,7 +57,7 @@ Suite *suite_rpn(void) {
 
   s = suite_create("infix-to-rpn");
 
-  suite_add_tcase(s, tcase_without_parens());
+  suite_add_tcase(s, tcase_conversions());
 
   return s;
 }

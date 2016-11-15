@@ -121,3 +121,5 @@ char *infix_to_rpn(char *infix) {
   strcpy(infix, buffer);
   return infix;
 }
+
+const char *rpn_to_infix(const char *rpn) { return "NULL"; }
