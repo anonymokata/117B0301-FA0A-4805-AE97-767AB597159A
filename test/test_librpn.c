@@ -7,8 +7,8 @@
 #define BUFFER_LENGTH 256
 
 struct test_value {
-  const char *source;
-  const char *expected;
+  const char *infix;
+  const char *rpn;
 };
 
 struct test_value cases[] = {{"a+b", "ab+"},
@@ -28,11 +28,11 @@ struct test_value cases[] = {{"a+b", "ab+"},
                              {"((v/w)^x)*(y-z)", "vw/x^yz-*"}};
 
 START_TEST(simple_values) {
-  static char source[BUFFER_LENGTH];
-  memset(source, 0, BUFFER_LENGTH);
-  strncpy(source, cases[_i].source, BUFFER_LENGTH - 1);
-  const char *expected = cases[_i].expected;
-  ck_assert_str_eq(infix_to_rpn(source), expected);
+  static char infix[BUFFER_LENGTH];
+  memset(infix, 0, BUFFER_LENGTH);
+  strncpy(infix, cases[_i].infix, BUFFER_LENGTH - 1);
+  const char *expected = cases[_i].rpn;
+  ck_assert_str_eq(infix_to_rpn(infix), expected);
 }
 END_TEST
 
