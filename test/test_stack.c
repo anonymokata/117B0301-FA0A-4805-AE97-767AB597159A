@@ -1,7 +1,7 @@
 #include "test_stack.h"
 #include "../stack.h"
 
-void setup() { stack_init(); }
+static void setup() { stack_init(); }
 
 START_TEST(pushedCharacter_whenPopped_returnsCharacter) {
   stack_push('A');

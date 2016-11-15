@@ -1,5 +1,6 @@
 
 #include "../librpn.h"
+#include "test_sstack.h"
 #include "test_stack.h"
 #include <check.h>
 
@@ -65,6 +66,7 @@ int main(int argc, char **argv) {
   stacksuite = suite_stack();
   runner = srunner_create(s);
   srunner_add_suite(runner, stacksuite);
+  srunner_add_suite(runner, suite_stringstack());
   srunner_run_all(runner, CK_NORMAL);
   number_fails = srunner_ntests_failed(runner);
   srunner_free(runner);
