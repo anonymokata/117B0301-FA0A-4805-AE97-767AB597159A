@@ -8,24 +8,21 @@
  */
 #define STACK_SIZE 500
 
-static char *stack[STACK_SIZE];
+static const char *stack[STACK_SIZE];
 static int stack_idx;
-
-static char *memory[STACK_SIZE];
-static int memory_idx;
 
 void ss_init(void) {
   stack_idx = 0;
-  memory_idx = 0;
-
   memset(stack, 0, sizeof(stack));
-  memset(memory, 0, sizeof(memory));
 }
 
-void ss_push(const char *newitem) {}
+void ss_push(const char *newitem) {
+  if (stack_idx < STACK_SIZE)
+    stack[stack_idx++] = newitem;
+}
 
-const char *ss_pop(void) { return "NULL"; }
+const char *ss_pop(void) { return stack[--stack_idx]; }
 
-const char *ss_peek(void) { return NULL; }
+const char *ss_peek(void) { return stack[stack_idx - 1]; }
 
 void ss_release(void) {}
