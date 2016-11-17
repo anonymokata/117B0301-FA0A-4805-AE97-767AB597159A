@@ -4,9 +4,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "aststack.h"
 #include "librpn.h"
 #include "stack.h"
-#include "stringstack.h"
 
 /* Assume there are 26 available symbols [a-z].
  * Each symbol save the first may be followed by an operator [^,-,+,/,*]
@@ -171,34 +171,93 @@ void join_terms(char x) {
   free(expression);
 }
 
+void print_infix_node(struct ast *parent, FILE *stream) {
+  enum operator_p parent_precedence;
+
+  if (NULL == parent) {
+    return;
+  }
+
+  /*
+    parent_precedence = operator_precedence(parent->op);
+    if (OP_INVALID == parent_precedence) {
+      fputc(parent->op, stream);
+    } else {
+      enum operator_p current_precedence;
+      if (parent->left) {
+        current_precedence = operator_precedence(parent->left->op);
+        if (current_precedence > parent_precedence &&
+            current_precedence != OP_INVALID) {
+          fputc('(', stream);
+          print_infix_node(parent->left, stream);
+          fputc(')', stream);
+        } else {
+          print_infix_node(parent->left, stream);
+        }
+      }
+      fputc(parent->op, stream);
+      if (parent->right) {
+        current_precedence = operator_precedence(parent->right->op);
+        if (current_precedence > parent_precedence &&
+            current_precedence != OP_INVALID) {
+          fputc('(', stream);
+          print_infix_node(parent->right, stream);
+          fputc(')', stream);
+        } else {
+          print_infix_node(parent->right, stream);
+        }
+      }
+    }
+    */
+  print_infix_node(parent->left, stream);
+  fputc(parent->op, stream);
+  print_infix_node(parent->right, stream);
+}
+
+char *print_infix(struct ast *top) {
+  static char buffer[4096];
+  FILE *stream;
+
+  memset(buffer, 0, sizeof(buffer));
+  stream = fmemopen(buffer, sizeof(buffer), "w");
+  print_infix_node(top, stream);
+  fclose(stream);
+
+  return buffer;
+}
+
 char *rpn_to_infix(const char *rpn) {
   enum operator_p precedence;
   char x;
-  char x_as_string[2] = {0, 0};
   char *result;
+  struct ast *current;
+  struct ast *TOP = NULL;
 
-  ss_init();
+  as_init();
 
   for (int i = 0; rpn[i]; ++i) {
     x = rpn[i];
-    x_as_string[0] = x;
     precedence = operator_precedence(x);
-    switch (precedence) {
-    case OP_INVALID:
-      ss_push(x_as_string);
+    current = ast_create();
+    current->op = x;
+
+    switch (x) {
+    case '+':
+    case '-':
+    case '*':
+    case '/':
+    case '^':
+      current->right = as_pop();
+      current->left = as_pop();
+      as_push(current);
+      TOP = current;
       break;
-    case OP_ADDITION:
-    case OP_SUBTRACTION:
-    case OP_MULTIPLICATION:
-    case OP_DIVISION:
-    case OP_EXPONENT:
-      join_terms(x);
-      break;
+    default:
+      as_push(current);
     }
   }
 
-  result = strdup(ss_pop());
-  ss_release();
+  result = print_infix(TOP);
 
   return result;
 }

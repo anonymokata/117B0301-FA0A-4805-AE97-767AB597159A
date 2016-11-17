@@ -44,7 +44,7 @@ START_TEST(convert_rpn_to_infix) {
   actual = rpn_to_infix(cases[_i].rpn);
   expected = cases[_i].infix;
   ck_assert_str_eq(actual, expected);
-  free(actual);
+  // free(actual);
 }
 END_TEST
 
