@@ -151,67 +151,51 @@ char *wrap_term(const char *arg, char op) {
   return output;
 }
 
-void join_terms(char x) {
-  const char *cright;
-  const char *cleft;
-  char *right;
-  char *left;
-  char *expression;
+int needs_parens(struct ast *current, struct ast *child) {
+  enum operator_p precedence;
+  enum operator_p child_precedence;
 
-  cright = ss_pop();
-  cleft = ss_pop();
+  if (NULL == child) {
+    return 0;
+  }
 
-  right = wrap_term(cright, x);
-  left = wrap_term(cleft, x);
-  asprintf(&expression, "%s%c%s", left, x, right);
-  ss_push(expression);
+  precedence = operator_precedence(current->op);
+  child_precedence = operator_precedence(child->op);
 
-  free(left);
-  free(right);
-  free(expression);
+  if (OP_INVALID == child_precedence) {
+    return 0;
+  }
+
+  if (precedence < child_precedence) {
+    return 1;
+  }
+
+  return 0;
 }
 
 void print_infix_node(struct ast *parent, FILE *stream) {
   enum operator_p parent_precedence;
+  int left_parens;
+  int right_parens;
 
   if (NULL == parent) {
     return;
   }
 
-  /*
-    parent_precedence = operator_precedence(parent->op);
-    if (OP_INVALID == parent_precedence) {
-      fputc(parent->op, stream);
-    } else {
-      enum operator_p current_precedence;
-      if (parent->left) {
-        current_precedence = operator_precedence(parent->left->op);
-        if (current_precedence > parent_precedence &&
-            current_precedence != OP_INVALID) {
-          fputc('(', stream);
-          print_infix_node(parent->left, stream);
-          fputc(')', stream);
-        } else {
-          print_infix_node(parent->left, stream);
-        }
-      }
-      fputc(parent->op, stream);
-      if (parent->right) {
-        current_precedence = operator_precedence(parent->right->op);
-        if (current_precedence > parent_precedence &&
-            current_precedence != OP_INVALID) {
-          fputc('(', stream);
-          print_infix_node(parent->right, stream);
-          fputc(')', stream);
-        } else {
-          print_infix_node(parent->right, stream);
-        }
-      }
-    }
-    */
+  left_parens = needs_parens(parent, parent->left);
+  right_parens = needs_parens(parent, parent->right);
+
+  if (left_parens)
+    fputc('(', stream);
   print_infix_node(parent->left, stream);
+  if (left_parens)
+    fputc(')', stream);
   fputc(parent->op, stream);
+  if (right_parens)
+    fputc('(', stream);
   print_infix_node(parent->right, stream);
+  if (right_parens)
+    fputc(')', stream);
 }
 
 char *print_infix(struct ast *top) {
