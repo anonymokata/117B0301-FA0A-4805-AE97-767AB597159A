@@ -25,8 +25,7 @@ struct test_value cases[] = {{"a+b", "ab+"},
                              {"((a+b)*c)/d", "ab+c*d/"},
                              {"(c*(a+b))/(d+e)", "cab+*de+/"},
                              {"l/m^n*o-p", "lmn^/o*p-"},
-                             {"((l/(m^n))*o)-p", "lmn^/o*p-"},
-                             {"((v/w)^x)*(y-z)", "vw/x^yz-*"}};
+                             {"(v/w)^x*(y-z)", "vw/x^yz-*"}};
 
 START_TEST(convert_infix_to_rpn) {
   static char infix[BUFFER_LENGTH];

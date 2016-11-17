@@ -243,5 +243,7 @@ char *rpn_to_infix(const char *rpn) {
 
   result = print_infix(TOP);
 
+  ast_release(TOP);
+
   return result;
 }
