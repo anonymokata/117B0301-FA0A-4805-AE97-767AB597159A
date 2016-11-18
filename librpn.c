@@ -1,6 +1,3 @@
-#define _GNU_SOURCE
-
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -8,13 +5,7 @@
 #include "librpn.h"
 #include "stack.h"
 
-/* Assume there are 26 available symbols [a-z].
- * Each symbol save the first may be followed by an operator [^,-,+,/,*]
- * This gives 26 * 2 - 1 = 51 characters needed to represent any possible
- * operation in RPN.
- * An additional character is needed for a terminating NULL value.
- */
-#define RPN_BUFFER_SIZE 52
+#define RPN_BUFFER_SIZE 4096
 
 char buffer[RPN_BUFFER_SIZE];
 int buffer_idx;
@@ -89,8 +80,6 @@ void handle_right_paren(char symbol /* unused */) {
 
 char *infix_to_rpn(char *infix) {
   char symbol;
-  char last_operator;
-  int precedence;
 
   buffer_init();
   stack_init();
@@ -121,10 +110,7 @@ char *infix_to_rpn(char *infix) {
     buffer_append(symbol);
   }
 
-  // Unchecked copy is safe because the RPN representation will always be the
-  // same size or smaller than the infix notation.
-  strcpy(infix, buffer);
-  return infix;
+  return buffer;
 }
 
 int expression_needs_wrap(const char *expression, char op) {
@@ -139,16 +125,6 @@ int expression_needs_wrap(const char *expression, char op) {
     }
   }
   return 0;
-}
-
-char *wrap_term(const char *arg, char op) {
-  char *output;
-  if (strlen(arg) > 3 && expression_needs_wrap(arg, op)) {
-    asprintf(&output, "(%s)", arg);
-  } else {
-    output = strdup(arg);
-  }
-  return output;
 }
 
 int needs_parens(struct ast *current, struct ast *child) {
@@ -173,7 +149,7 @@ int needs_parens(struct ast *current, struct ast *child) {
   return 0;
 }
 
-void print_infix_node(struct ast *parent, FILE *stream) {
+void print_infix_node(struct ast *parent) {
   enum operator_p parent_precedence;
   int left_parens;
   int right_parens;
@@ -186,34 +162,69 @@ void print_infix_node(struct ast *parent, FILE *stream) {
   right_parens = needs_parens(parent, parent->right);
 
   if (left_parens)
-    fputc('(', stream);
-  print_infix_node(parent->left, stream);
+    buffer_append('(');
+  print_infix_node(parent->left);
   if (left_parens)
-    fputc(')', stream);
-  fputc(parent->op, stream);
+    buffer_append(')');
+  buffer_append(parent->op);
   if (right_parens)
-    fputc('(', stream);
-  print_infix_node(parent->right, stream);
+    buffer_append('(');
+  print_infix_node(parent->right);
   if (right_parens)
-    fputc(')', stream);
+    buffer_append(')');
 }
 
 char *print_infix(struct ast *top) {
-  static char buffer[4096];
-  FILE *stream;
+  buffer_init();
+  print_infix_node(top);
 
-  memset(buffer, 0, sizeof(buffer));
-  stream = fmemopen(buffer, sizeof(buffer), "w");
-  print_infix_node(top, stream);
-  fclose(stream);
+  return buffer;
+}
+
+void print_rpn_node(struct ast *parent) {
+  if (NULL == parent) {
+    return;
+  }
+
+  print_rpn_node(parent->left);
+  print_rpn_node(parent->right);
+  buffer_append(parent->op);
+}
+
+char *print_rpn(struct ast *top) {
+
+  buffer_init();
+
+  print_rpn_node(top);
 
   return buffer;
 }
 
 char *rpn_to_infix(const char *rpn) {
+  char *result;
+  struct ast *tree;
+
+  tree = parse_rpn(rpn);
+  result = print_infix(tree);
+  ast_release(tree);
+
+  return result;
+}
+
+char *rpn_to_rpn(const char *rpn) {
+  char *result;
+  struct ast *tree;
+
+  tree = parse_rpn(rpn);
+  result = print_rpn(tree);
+  ast_release(tree);
+
+  return result;
+}
+
+struct ast *parse_rpn(const char *rpn) {
   enum operator_p precedence;
   char x;
-  char *result;
   struct ast *current;
   struct ast *TOP = NULL;
 
@@ -240,10 +251,5 @@ char *rpn_to_infix(const char *rpn) {
       as_push(current);
     }
   }
-
-  result = print_infix(TOP);
-
-  ast_release(TOP);
-
-  return result;
+  return TOP;
 }
