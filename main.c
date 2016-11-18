@@ -1,3 +1,4 @@
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,8 +11,16 @@ int main(int argc, const char **argv) {
   stack_init();
 
   if (argc > 1) {
-    work = rpn_to_infix(argv[1]);
-    printf("%s => %s\n", argv[1], work);
+    const char *subject = argv[1];
+    if (strlen(subject) < 3) {
+      fprintf(stderr, "\"%s\" is too short to be valid input.\n", subject);
+      return EXIT_FAILURE;
+    }
+    if (isalpha(subject[0]) && isalpha((char)subject[1])) {
+      printf("RPN Notation: %s => Infix: %s\n", subject, rpn_to_infix(subject));
+    } else {
+      printf("Infix Notation: %s => RPN: %s\n", subject, infix_to_rpn(subject));
+    }
   }
 
   return EXIT_SUCCESS;

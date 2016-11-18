@@ -78,7 +78,7 @@ void handle_right_paren(char symbol /* unused */) {
   }
 }
 
-char *infix_to_rpn(char *infix) {
+const char *infix_to_rpn(const char *infix) {
   char symbol;
 
   buffer_init();
@@ -200,7 +200,7 @@ char *print_rpn(struct ast *top) {
   return buffer;
 }
 
-char *rpn_to_infix(const char *rpn) {
+const char *rpn_to_infix(const char *rpn) {
   char *result;
   struct ast *tree;
 
@@ -211,7 +211,7 @@ char *rpn_to_infix(const char *rpn) {
   return result;
 }
 
-char *rpn_to_rpn(const char *rpn) {
+const char *rpn_to_rpn(const char *rpn) {
   char *result;
   struct ast *tree;
 

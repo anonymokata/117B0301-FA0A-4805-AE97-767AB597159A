@@ -36,7 +36,7 @@ START_TEST(convert_infix_to_rpn) {
 END_TEST
 
 START_TEST(convert_rpn_to_infix) {
-  char *actual;
+  const char *actual;
   const char *expected;
 
   actual = rpn_to_infix(cases[_i].rpn);
@@ -46,7 +46,7 @@ START_TEST(convert_rpn_to_infix) {
 END_TEST
 
 START_TEST(rpn_replay_ast) {
-  char *actual;
+  const char *actual;
   const char *expected;
 
   actual = rpn_to_rpn(cases[_i].rpn);
