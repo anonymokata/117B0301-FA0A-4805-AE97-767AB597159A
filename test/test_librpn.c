@@ -43,7 +43,6 @@ START_TEST(convert_rpn_to_infix) {
   actual = rpn_to_infix(cases[_i].rpn);
   expected = cases[_i].infix;
   ck_assert_str_eq(actual, expected);
-  // free(actual);
 }
 END_TEST
 
@@ -78,7 +77,6 @@ int main(int argc, char **argv) {
   stacksuite = suite_stack();
   runner = srunner_create(s);
   srunner_add_suite(runner, stacksuite);
-  srunner_add_suite(runner, suite_stringstack());
   srunner_run_all(runner, CK_NORMAL);
   number_fails = srunner_ntests_failed(runner);
   srunner_free(runner);
